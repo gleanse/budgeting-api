@@ -12,26 +12,21 @@ class AccountService:
         self.income_repo = IncomeRepository(session)
         self.expense_repo = ExpenseRepository(session)
 
-    def list_by_user(self, user_id: int) -> list[Account]:
-        return self.account_repo.get_all_by_user(user_id)
+    def list_by_user_with_balance(self, user_id: int) -> list[tuple[Account, Decimal]]:
+        return self.account_repo.get_all_by_user_with_balance(user_id)
 
-    def get_by_id_and_user(self, account_id: int, user_id: int) -> Account:
-        account = self.account_repo.get_by_id_and_user(account_id, user_id)
-
-        if account is None:
-            raise ValueError("Account not found")
-
-        return account
-
-    def account_balance(self, account_id: int, user_id: int) -> Decimal:
+    def get_by_id_and_user_with_balance(
+        self, account_id: int, user_id: int
+    ) -> tuple[Account, Decimal]:
         account = self.account_repo.get_by_id_and_user(account_id, user_id)
         if account is None:
             raise ValueError("Account not found")
 
         total_income = self.income_repo.get_total_balance_by_account(account_id)
         total_expense = self.expense_repo.get_total_balance_by_account(account_id)
+        balance = account.initial_balance + total_income - total_expense
 
-        return account.initial_balance + total_income - total_expense
+        return account, balance
 
     def total_balance_on_all_accounts(self, user_id: int) -> Decimal:
         total_income = self.income_repo.get_total_balance_across_accounts_by_user(

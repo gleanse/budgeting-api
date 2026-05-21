@@ -11,7 +11,13 @@ class AccountPatchRequest(BaseModel):
     name: str | None = None
 
 
-class AccountResponse(BaseModel):
+class AccountListResponse(BaseModel):
+    id: int
+    name: str
+    total_balance: Decimal
+
+
+class AccountDetailResponse(BaseModel):
     id: int
     user_id: int
     name: str
@@ -19,6 +25,11 @@ class AccountResponse(BaseModel):
     total_balance: Decimal
 
 
+class OverallBalanceResponse(BaseModel):
+    user: str
+    total_balance: Decimal
+
+
 class AccountCreateResponse(BaseModel):
     message: str = "Account created successfully"
-    created_item: AccountResponse
+    created_item: AccountDetailResponse
