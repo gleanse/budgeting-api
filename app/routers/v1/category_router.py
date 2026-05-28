@@ -14,7 +14,16 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 async def get_categories(
     current_user: UserAuthenticationDep, category_service: CategoryServiceDep
 ) -> list[CategoryResponse]:
-    return category_service.list_by_user(current_user.id)
+    categories = category_service.list_by_user(current_user.id)
+    return [
+        CategoryResponse(
+            id=category.id,
+            user_id=category.user_id,
+            name=category.name,
+            type=category.type,
+        )
+        for category in categories
+    ]
 
 
 @router.get("/{category_id}", response_model=CategoryResponse)
@@ -24,9 +33,16 @@ async def get_category(
     category_id: int,
 ) -> CategoryResponse:
     try:
-        return category_service.get_by_id_and_user(category_id, current_user.id)
+        category = category_service.get_by_id_and_user(category_id, current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+    return CategoryResponse(
+        id=category.id,
+        user_id=category.user_id,
+        name=category.name,
+        type=category.type,
+    )
 
 
 @router.post(
@@ -45,7 +61,7 @@ async def create_category(
             user_id=current_user.id,
         )
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
     return CategoryCreateResponse(
         created_item=CategoryResponse(
@@ -77,7 +93,12 @@ async def update_category(
         else:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
-    return updated_category
+    return CategoryResponse(
+        id=updated_category.id,
+        user_id=updated_category.user_id,
+        name=updated_category.name,
+        type=updated_category.type,
+    )
 
 
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)

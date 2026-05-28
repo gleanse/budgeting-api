@@ -20,6 +20,13 @@ class CategoryRepository:
 
         return self.session.exec(statement).first()
 
+    def exists_by_name_and_user(self, name, user_id) -> bool:
+        """Check if category name already exists for user"""
+        statement = select(Category).where(
+            Category.name == name, Category.user_id == user_id
+        )
+        return self.session.exec(statement).first() is not None
+
     def save(self, category: Category) -> Category:
         """insert or update category"""
         self.session.add(category)

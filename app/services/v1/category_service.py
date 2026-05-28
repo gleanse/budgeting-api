@@ -23,6 +23,9 @@ class CategoryService:
         return category
 
     def create(self, name: str, type: str, user_id: int) -> Category:
+        if self.category_repo.exists_by_name_and_user(name, user_id):
+            raise ValueError(f"Category '{name}' already exists")
+
         new_category = Category(
             name=name,
             type=type,
@@ -47,7 +50,11 @@ class CategoryService:
                     "Cannot change category type as it is already used by existing transactions"
                 )
 
-        if name is not None:
+        if name is not None and name != category.name:
+            if self.category_repo.exists_by_name_and_user(
+                name, user_id, exclude_id=category_id
+            ):
+                raise ValueError(f"Category '{name}' already exists")
             category.name = name
 
         if type is not None:
