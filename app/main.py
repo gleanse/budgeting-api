@@ -4,11 +4,10 @@ from contextlib import asynccontextmanager
 from app.database import engine
 from app.routers.v1 import (
     auth_router,
-    balance_router,
     category_router,
+    account_router,
     expense_router,
     income_router,
-    account_router,
 )
 
 
@@ -33,7 +32,6 @@ app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(income_router.router, prefix="/api/v1")
 app.include_router(expense_router.router, prefix="/api/v1")
 app.include_router(category_router.router, prefix="/api/v1")
-app.include_router(balance_router.router, prefix="/api/v1")
 app.include_router(account_router.router, prefix="/api/v1")
 
 
