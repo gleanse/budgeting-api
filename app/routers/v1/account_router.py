@@ -61,3 +61,29 @@ async def get_account(
         initial_balance=account.initial_balance,
         total_balance=balance,
     )
+
+
+@router.post("/", response_model=AccountCreateResponse)
+async def create_account(
+    current_user: UserAuthenticationDep,
+    account_service: AccountServiceDep,
+    account_data: AccountCreateRequest,
+):
+    try:
+        created_account = account_service.create(
+            name=account_data.name,
+            initial_balance=account_data.initial_balance,
+            user_id=current_user.id,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    return AccountCreateResponse(
+        created_item=AccountDetailResponse(
+            id=created_account.id,
+            user_id=created_account.user_id,
+            name=created_account.name,
+            initial_balance=created_account.initial_balance,
+            total_balance=created_account.initial_balance,
+        )
+    )

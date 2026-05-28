@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from decimal import Decimal
 
 
 class AccountCreateRequest(BaseModel):
-    name: str
-    initial_balance: Decimal
+    name: str = Field(min_length=1, max_length=50)
+    initial_balance: Decimal = Field(ge=0)
 
 
 class AccountPatchRequest(BaseModel):

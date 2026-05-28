@@ -7,6 +7,13 @@ class AccountRepository:
     def __init__(self, session: Session):
         self.session = session
 
+    def exists_by_name_and_user(self, name, user_id) -> bool:
+        """Check if account name already exists for user"""
+        statement = select(Account).where(
+            Account.name == name, Account.user_id == user_id
+        )
+        return self.session.exec(statement).first() is not None
+
     def get_all_by_user_with_balance(
         self, user_id: int
     ) -> list[tuple[Account, Decimal]]:

@@ -42,8 +42,16 @@ class AccountService:
         return total_initial_balance + total_income - total_expense
 
     def create(self, name: str, initial_balance: Decimal, user_id: int) -> Account:
+        if self.account_repo.exists_by_name_and_user(name, user_id):
+            raise ValueError(f"Account '{name}' already exists")
+
+        if initial_balance < 0:
+            raise ValueError("Amount must be positive")
+
         new_account = Account(
-            name=name, initial_balance=initial_balance, user_id=user_id
+            name=name,
+            initial_balance=initial_balance,
+            user_id=user_id,
         )
 
         return self.account_repo.save(new_account)
@@ -54,7 +62,9 @@ class AccountService:
         if account is None:
             raise ValueError("Account not found")
 
-        if name is not None:
+        if name is not None and name != account.name:
+            if self.account_repo.exists_by_name_and_user(name, user_id):
+                raise ValueError(f"Account '{name}' already exists")
             account.name = name
 
         return self.account_repo.save(account)
