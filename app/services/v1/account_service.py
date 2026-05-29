@@ -56,7 +56,9 @@ class AccountService:
 
         return self.account_repo.save(new_account)
 
-    def update(self, account_id: int, user_id: int, name: str | None) -> Account:
+    def update(
+        self, account_id: int, user_id: int, name: str | None
+    ) -> tuple[Account, Decimal]:
         account = self.account_repo.get_by_id_and_user(account_id, user_id)
 
         if account is None:
@@ -67,7 +69,12 @@ class AccountService:
                 raise ValueError(f"Account '{name}' already exists")
             account.name = name
 
-        return self.account_repo.save(account)
+        updated_account = self.account_repo.save(account)
+        total_income = self.income_repo.get_total_balance_by_account(account_id)
+        total_expense = self.expense_repo.get_total_balance_by_account(account_id)
+        balance = updated_account.initial_balance + total_income - total_expense
+
+        return updated_account, balance
 
     def delete(self, account_id: int, user_id: int) -> None:
         account = self.account_repo.get_by_id_and_user(account_id, user_id)

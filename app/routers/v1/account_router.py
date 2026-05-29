@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.core.dependencies import UserAuthenticationDep, AccountServiceDep
 from app.schemas.v1.account_schema import (
     AccountCreateRequest,
+    AccountPatchRequest,
     AccountCreateResponse,
     AccountListResponse,
     AccountDetailResponse,
@@ -86,4 +87,32 @@ async def create_account(
             initial_balance=created_account.initial_balance,
             total_balance=created_account.initial_balance,
         )
+    )
+
+
+@router.patch("/{account_id}", response_model=AccountDetailResponse)
+async def update_account(
+    current_user: UserAuthenticationDep,
+    account_service: AccountServiceDep,
+    account_id: int,
+    account_data: AccountPatchRequest,
+):
+    try:
+        updated_account, balance = account_service.update(
+            account_id=account_id,
+            user_id=current_user.id,
+            name=account_data.name,
+        )
+    except ValueError as e:
+        if "not found" in str(e):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        else:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    return AccountDetailResponse(
+        id=updated_account.id,
+        user_id=updated_account.user_id,
+        name=updated_account.name,
+        initial_balance=updated_account.initial_balance,
+        total_balance=balance,
     )
