@@ -118,7 +118,7 @@ async def update_account(
     )
 
 
-@router.delete("{account_id}", response_model=status.HTTP_204_NO_CONTENT)
+@router.delete("/{account_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
     current_user: UserAuthenticationDep,
     account_service: AccountServiceDep,
