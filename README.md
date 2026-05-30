@@ -1,8 +1,8 @@
-# Budgeting App
+# Budgeting API
 
-A budgeting app API built with FastAPI and SQLModel. This project demonstrates JWT authentication, database migrations, and versioned endpoints.
+A budgeting API built with FastAPI and SQLModel. This project demonstrates JWT authentication, database migrations, and versioned endpoints.
 
-> Main repo: [github.com/gleanse/budgeting-app](https://github.com/gleanse/budgeting-app)
+> Main repo: [github.com/gleanse/budgeting-api](https://github.com/gleanse/budgeting-api)
 
 ---
 
@@ -24,8 +24,8 @@ A budgeting app API built with FastAPI and SQLModel. This project demonstrates J
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/gleanse/budgeting-app.git
-cd budgeting-app
+git clone https://github.com/gleanse/budgeting-api.git
+cd budgeting-api
 ```
 
 ### 2. Create your environment file
