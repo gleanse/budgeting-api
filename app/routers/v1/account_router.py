@@ -116,3 +116,18 @@ async def update_account(
         initial_balance=updated_account.initial_balance,
         total_balance=balance,
     )
+
+
+@router.delete("{account_id}", response_model=status.HTTP_204_NO_CONTENT)
+async def delete_account(
+    current_user: UserAuthenticationDep,
+    account_service: AccountServiceDep,
+    account_id: int,
+) -> None:
+    try:
+        account_service.delete(account_id=account_id, user_id=current_user.id)
+    except ValueError as e:
+        if "not found" in str(e):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        else:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
