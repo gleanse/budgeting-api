@@ -51,9 +51,6 @@ class TransactionService:
         user_id: int,
         date_time: datetime | None = None,
     ) -> tuple[Income | Expense, str, str]:
-        if amount <= 0:
-            raise ValueError("Amount must be positive")
-
         category = self.category_repo.get_by_id_and_user(category_id, user_id)
         if category is None:
             raise ValueError("Category not found")
@@ -104,10 +101,6 @@ class TransactionService:
 
         if result is None:
             raise ValueError("Transaction not found")
-
-        amount = kwargs.get("amount")
-        if amount is not None and amount <= 0:
-            raise ValueError("Amount must be positive")
 
         # unpack tuple result
         transaction, category_name, account_name = result

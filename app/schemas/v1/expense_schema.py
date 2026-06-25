@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from decimal import Decimal
 
 
 class ExpenseCreateRequest(BaseModel):
-    amount: Decimal
+    amount: Decimal = Field(gt=0)
     category_id: int | None = None
     account_id: int
     description: str | None = None
@@ -12,7 +12,7 @@ class ExpenseCreateRequest(BaseModel):
 
 
 class ExpenseUpdateRequest(BaseModel):
-    amount: Decimal | None = None
+    amount: Decimal | None = Field(default=None, gt=0)
     category_id: int | None = None
     account_id: int | None = None
     description: str | None = None
