@@ -45,9 +45,6 @@ class AccountService:
         if self.account_repo.exists_by_name_and_user(name, user_id):
             raise ValueError(f"Account '{name}' already exists")
 
-        if initial_balance < 0:
-            raise ValueError("Amount must be positive")
-
         new_account = Account(
             name=name,
             initial_balance=initial_balance,
