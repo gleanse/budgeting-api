@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:17
-    container_name: budgeting-app-db
+    container_name: budgeting-api-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
