@@ -1,113 +1,139 @@
+<div align="center">
+
 # Budgeting API
 
-A budgeting API built with FastAPI and SQLModel. This project demonstrates JWT authentication, database migrations, and versioned endpoints.
+A personal finance REST API built with FastAPI and SQLModel.
+JWT auth, versioned endpoints, and database migrations.
 
-> Main repo: [github.com/gleanse/budgeting-api](https://github.com/gleanse/budgeting-api)
+
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
+
+
+
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+
+
+
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+
+
+
+
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
+
+
+</div>
 
 ---
+
+## Features
+
+- JWT authentication with bcrypt password hashing
+- Accounts with computed balances
+- Income and expense tracking
+- User-defined categories
+- Alembic migrations
+- Versioned endpoints under `/api/v1`
+- Interactive docs via Swagger UI and ReDoc
+
+## Endpoints
+
+All routes are prefixed with `/api/v1` and, except auth, require a bearer token.
+
+| Resource | Routes |
+| -------- | ------ |
+| `/auth` | `POST /register` `POST /login` `POST /logout` |
+| `/accounts` | `GET /` `GET /{id}` `POST /` `PATCH /{id}` `DELETE /{id}` `GET /balance/overall` |
+| `/incomes` | `GET /` `GET /{id}` `POST /` `PATCH /{id}` `DELETE /{id}` |
+| `/expenses` | `GET /` `GET /{id}` `POST /` `PATCH /{id}` `DELETE /{id}` |
+| `/categories` | `GET /` `GET /{id}` `POST /` `PATCH /{id}` `DELETE /{id}` |
+
+Full request and response schemas are in the interactive docs at `/docs`.
 
 ## Tech Stack
 
-- **FastAPI** - web framework
-- **SQLModel** - ORM (built on SQLAlchemy + Pydantic)
-- **PostgreSQL** - database
-- **Alembic** - database migrations
-- **Docker** - containerized database
-- **python-decouple** - environment variable management
-- **bcrypt** - password hashing
-- **python-jose** - JWT authentication
-
----
+| | |
+| --- | --- |
+| Framework | FastAPI |
+| ORM | SQLModel (SQLAlchemy + Pydantic) |
+| Database | PostgreSQL |
+| Migrations | Alembic |
+| Auth | python-jose, bcrypt |
+| Config | python-decouple |
+| Containers | Docker Compose (database) |
 
 ## Getting Started
 
-### 1. Clone the repo
+**1. Clone the repo**
 
 ```bash
 git clone https://github.com/gleanse/budgeting-api.git
 cd budgeting-api
 ```
 
-### 2. Create your environment file
+**2. Create your environment file**
 
 ```bash
-# Linux/Mac/WSL
 cp .env.example .env
-
-# Windows
-copy .env.example .env
 ```
-
-Then fill in your values in `.env`:
 
 ```env
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database_name>
 JWT_KEY=your-secret-jwt-key-here
 ```
 
-### 3. Start the database
+**3. Start PostgreSQL**
+
+With Docker:
 
 ```bash
 docker compose up -d
 ```
 
-### 4. Create a virtual environment and install dependencies
+Or point `DATABASE_URL` at any PostgreSQL instance you already run.
+
+**4. Install dependencies**
 
 ```bash
-python -m venv venv
-
-# Linux/Mac/WSL
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 5. Run database migrations
+**5. Run migrations**
 
 ```bash
 alembic upgrade head
 ```
 
-### 6. Start the server
+**6. Start the server**
+
 ```bash
-# recommended
 fastapi dev app/main.py
-
-# or with uvicorn directly
-uvicorn app.main:app --reload
-
-# custom host/port if needed
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
 ```
 
----
-
-## Interactive API Docs
-
-FastAPI provides automatic interactive documentation out of the box. All endpoints are currently versioned under `/api/v1/`.
-
-- **Swagger UI** → `http://<host>:<port>/docs`
-- **ReDoc** → `http://<host>:<port>/redoc`
-
----
+The API runs at `http://localhost:8000`, with docs at `/docs` and `/redoc`.
 
 ## Testing
 
-### Sync the test database schema
-
-The test database (`budgeting_fastapi_db_test`) is created automatically on container init via `init.sql`. To apply migrations to it, override `DATABASE_URL` when running alembic:
+The test database is created by `init.sql` on container init. Apply migrations to it by overriding `DATABASE_URL`:
 
 ```bash
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/budgeting_fastapi_db_test alembic upgrade head
 ```
 
----
+Then run the suite:
 
-## Known Limitations (v1.0.0)
+```bash
+pytest
+```
 
-- No update (PATCH/PUT) endpoints yet — coming in v1.1.0
-- No pagination on list endpoints — coming in v1.1.0
-- Logout is stateless (token is not blacklisted)
+## Known Limitations
+
+- No pagination on list endpoints
+- Logout is stateless, so tokens are not blacklisted
+- Budget and transfer models exist but are not exposed through endpoints yet
