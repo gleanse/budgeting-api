@@ -12,7 +12,9 @@ from app import models
 target_metadata = SQLModel.metadata
 
 # Get URL from environment (override alembic.ini)
-db_url = decouple_config("DATABASE_URL", default="postgresql://user:pass@localhost/budgetdb")
+db_url = decouple_config(
+    "DATABASE_URL", default="postgresql://user:pass@localhost/budgetdb"
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,6 +24,7 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -35,6 +38,7 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     # just directly use the db url so its sync and easy to override
@@ -42,13 +46,12 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
-            target_metadata=target_metadata,
-            compare_type=True
+            connection=connection, target_metadata=target_metadata, compare_type=True
         )
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()
