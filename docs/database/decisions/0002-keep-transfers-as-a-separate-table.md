@@ -16,8 +16,8 @@ Transfers live in their own `transfers` table with `from_account_id` and
 
 ## Consequences
 - Income and expense totals and budgets ignore transfers automatically
-- Account balance = initial balance + income - expense + transfers in
-  - transfers out
+- Account balance is the initial balance plus income and incoming transfers,
+  minus expense and outgoing transfers
 - A combined history of transactions and transfers needs a query that
   merges the two tables
 - Rejected alternative: a two-row ledger (one debit, one credit per
