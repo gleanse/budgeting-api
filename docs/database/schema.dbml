@@ -1,0 +1,114 @@
+Enum transaction_type {
+  income
+  expense
+}
+
+Enum account_type {
+  cash
+  bank
+  ewallet
+}
+
+Table users {
+  id int [pk, increment]
+  username varchar [not null, unique]
+  password_hash varchar [not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table accounts {
+  id int [pk, increment]
+  user_id int [not null]
+  name varchar [not null]
+  type account_type [not null, default: 'cash']
+  currency char(3) [not null, default: 'PHP']
+  initial_balance numeric(14,2) [not null, default: 0]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, name) [unique]
+  }
+}
+
+Table categories {
+  id int [pk, increment]
+  user_id int [not null]
+  name varchar [not null]
+  type transaction_type [not null]
+
+  indexes {
+    (user_id, type, name) [unique]
+  }
+}
+
+Table transactions {
+  id int [pk, increment]
+  user_id int [not null]
+  account_id int [not null]
+  category_id int
+  type transaction_type [not null]
+  amount numeric(14,2) [not null]
+  description varchar
+  date_time timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, date_time)
+    account_id
+    category_id
+  }
+
+  checks {
+    `amount > 0` [name: 'ck_transactions_amount_positive']
+  }
+}
+
+Table transfers {
+  id int [pk, increment]
+  user_id int [not null]
+  from_account_id int [not null]
+  to_account_id int [not null]
+  amount numeric(14,2) [not null]
+  description varchar
+  date_time timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, date_time)
+  }
+
+  checks {
+    `amount > 0` [name: 'ck_transfers_amount_positive']
+    `from_account_id <> to_account_id` [name: 'ck_transfers_different_accounts']
+  }
+}
+
+Table budgets {
+  id int [pk, increment]
+  user_id int [not null]
+  category_id int [not null]
+  limit_amount numeric(14,2) [not null]
+  month smallint [not null]
+  year smallint [not null]
+
+  indexes {
+    (user_id, category_id, month, year) [unique]
+  }
+
+  checks {
+    `limit_amount > 0` [name: 'ck_budgets_limit_positive']
+    `month between 1 and 12` [name: 'ck_budgets_month_range']
+  }
+}
+
+Ref: accounts.user_id > users.id [delete: cascade]
+Ref: categories.user_id > users.id [delete: cascade]
+Ref: transactions.user_id > users.id [delete: cascade]
+Ref: transactions.account_id > accounts.id [delete: restrict]
+Ref: transactions.category_id > categories.id [delete: set null]
+Ref: transfers.user_id > users.id [delete: cascade]
+Ref: transfers.from_account_id > accounts.id [delete: restrict]
+Ref: transfers.to_account_id > accounts.id [delete: restrict]
+Ref: budgets.user_id > users.id [delete: cascade]
+Ref: budgets.category_id > categories.id [delete: cascade]
