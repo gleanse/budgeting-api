@@ -1,9 +1,11 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
 from app.routers.v1 import (
+    account_router,
     auth_router,
     category_router,
-    account_router,
     expense_router,
     income_router,
 )
